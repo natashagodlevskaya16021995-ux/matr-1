@@ -320,12 +320,13 @@
       transform: scale(0.95);
     }
 
+    /* Изменено свечение на синий */
     .letter-btn.correct {
-      background: #4caf50;
-      border-color: #388e3c;
+      background: #2196f3;
+      border-color: #1976d2;
       color: white;
       transform: scale(1.1);
-      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
+      box-shadow: 0 4px 10px rgba(33, 150, 243, 0.4);
     }
 
     .letter-btn.wrong {
@@ -395,11 +396,12 @@
       transition: opacity .25s ease;
     }
     .doneOverlay.active{ opacity:1; pointer-events:auto; }
+    
+    /* Убрали чёрный экран */
     .dim{
       position:absolute; inset:0;
-      /* Полупрозрачный фон, без черного экрана */
-      background: rgba(0,0,0,.6);
-      backdrop-filter: blur(5px);
+      background: rgba(253, 250, 246, 0.5); 
+      backdrop-filter: blur(6px);
     }
     
     .doneCard{
@@ -421,7 +423,6 @@
       margin: 0 0 20px 0;
     }
 
-    /* Стили и анимация для финальной картинки */
     .finImg {
       display: block;
       margin: 0 auto 15px auto;
@@ -468,9 +469,7 @@
     <div class="doneOverlay" id="doneOverlay" aria-hidden="true">
       <div class="dim"></div>
       <div class="doneCard">
-        <!-- Добавили картинку fin.png -->
         <img src="images/fin.png" alt="Финиш" class="finImg">
-        <!-- Изменили заголовок и убрали лишний текст -->
         <h2>Отличная работа!</h2>
         <button class="btn btnPrimary" id="againBtn">Играть снова</button>
       </div>
@@ -624,22 +623,16 @@
       return btn;
     }
 
+    /* ИСПРАВЛЕННЫЕ ОТСТУПЫ ДЛЯ GENIALLY */
     function getSafePadding(){
-      const vw = field.clientWidth;
-      const vh = field.clientHeight;
-
-      const noteW = Math.min(300, Math.max(160, vw - 60));
-      const styles = getComputedStyle(document.documentElement);
-      const openHeart = parseFloat(styles.getPropertyValue('--open-heart')) || 180;
-
-      const padY = Math.ceil(openHeart + 140);
-      const padX = Math.ceil((noteW + openHeart) / 2);
+      const vw = field.clientWidth || window.innerWidth;
+      const vh = field.clientHeight || window.innerHeight;
 
       return {
-        padLeft: clamp(padX, 24, Math.floor(vw * 0.45)),
-        padRight: clamp(padX, 24, Math.floor(vw * 0.45)),
-        padTop: clamp(padY, 150, Math.floor(vh * 0.45)),
-        padBottom: clamp(padY, 150, Math.floor(vh * 0.45))
+        padLeft: Math.max(15, vw * 0.05),
+        padRight: Math.max(15, vw * 0.05),
+        padTop: Math.max(70, vh * 0.12),
+        padBottom: Math.max(20, vh * 0.08)
       };
     }
 
@@ -647,24 +640,24 @@
       field.innerHTML = "";
       const placed = [];
 
-      const vw = field.clientWidth;
-      const vh = field.clientHeight;
+      const vw = field.clientWidth || window.innerWidth;
+      const vh = field.clientHeight || window.innerHeight;
 
-      const topSafe = 70;
       const pads = getSafePadding();
 
       for(let i=0; i<TARGET_COUNT; i++){
-        const size = rand(72, Math.min(110, vw * 0.22));
+        // Уменьшенный размер для удобного отображения в окне Genially
+        const size = rand(65, Math.min(95, vw * 0.15)); 
         const btn = buildHeartButton(i, size);
         btn.style.animationDelay = (45 * Math.min(i, 14)) + "ms";
 
         const maxTries = 1800;
         let x=0, y=0, ok=false;
 
-        const minX = Math.max(14, pads.padLeft);
-        const maxX = Math.max(minX + 1, vw - pads.padRight - size);
-        const minY = Math.max(topSafe, pads.padTop);
-        const maxY = Math.max(minY + 1, vh - pads.padBottom - size);
+        const minX = pads.padLeft;
+        const maxX = Math.max(minX + 10, vw - pads.padRight - size);
+        const minY = pads.padTop;
+        const maxY = Math.max(minY + 10, vh - pads.padBottom - size);
 
         const rA = size * 0.44;
         const boxPad = 12;
